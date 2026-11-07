@@ -1,0 +1,17 @@
+# load the libraries
+
+library(dplyr) 
+library(ggplot2)
+library(tidyr)
+
+# construct the dependant variable 
+
+data <- HBSC_Luxembourg_master
+
+data <- data %>%
+  mutate(mental_health = rowMeans(
+    across(c(irritable, nervous, sleepdifficulty, feellow)),
+    na.rm = FALSE
+  ))
+  
+
