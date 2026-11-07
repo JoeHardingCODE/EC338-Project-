@@ -1,17 +1,32 @@
-# load the libraries
-
-library(dplyr) 
+# Load libraries
+library(dplyr)
 library(ggplot2)
 library(tidyr)
 
-# construct the dependant variable 
-
+# rename the dataset
 data <- HBSC_Luxembourg_master
 
-data <- data %>%
-  mutate(mental_health = rowMeans(
-    across(c(irritable, nervous, sleepdifficulty, feellow)),
-    na.rm = FALSE
-  ))
-  
+# convert  the first row into the col names
+names(data) <- make.names(
+  trimws(as.character(unlist(data[1, ], use.names = FALSE))),
+  unique = TRUE
+)
 
+# remove the first row 
+data <- data[-1, , drop = FALSE]
+
+# Variables are now recorded as numeric values so we can average 
+data <- data %>%
+  mutate(across(
+    c(irritable, nervous, sleepdifficulty, feellow),
+    ~ as.numeric(as.character(.x))
+  ))
+
+# construct the mental health variable as a simple average of the four indicators 
+data <- data %>%
+  mutate(
+    `mental health` = rowMeans(
+      across(c(irritable, nervous, sleepdifficulty, feellow)),
+      na.rm = FALSE
+    )
+  )
